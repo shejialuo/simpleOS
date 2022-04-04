@@ -34,5 +34,5 @@ add_custom_command(TARGET mbr POST_BUILD
 add_custom_command(TARGET loader POST_BUILD
    COMMAND
     dd if=${PROJECT_SOURCE_DIR}/bin/loader.bin
-       of=${PROJECT_SOURCE_DIR}/img/hd60M.img bs=512 count=1 seek=2 conv=notrunc
+       of=${PROJECT_SOURCE_DIR}/img/hd60M.img bs=512 count=4 seek=2 conv=notrunc
 )
