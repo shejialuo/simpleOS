@@ -1,2 +1,8 @@
-bochs.out
-hd60M.img
+# Ignore CMake build file
+build/
+# Ignore log file
+log/
+# Ignore imageFile
+img/
+# Ignore binary file
+bin/
