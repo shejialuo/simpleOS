@@ -132,6 +132,87 @@ p_mode_start:
   mov ax, SELECTOR_VIDEO
   mov gs, ax
 
-  mov byte [gs:160], 'P'
+  call setup_page
+
+  sgdt [gdt_ptr]
+  mov ebx, [gdt_ptr + 2]
+  or dword [ebx + 0x18 + 4], 0xc0000000
+
+  add dword [gdt_ptr + 2], 0xc0000000
+  add esp, 0xc0000000
+
+  mov eax, PAGE_DIR_TABLE_POS
+  mov cr3, eax
+
+  mov eax, cr0
+  or eax,  0x80000000
+  mov cr0, eax
+
+  lgdt [gdt_ptr]
+
+  mov byte [gs:160], 'V'
 
   jmp $
+
+;-------- Create page directory and page -------
+; Here we put the page directory at 0x100000,
+; descirbed by `PAGE_DIR_TABLE_POS` in `boot.inc`.
+setup_page:
+  mov ecx, 4096
+  mov esi, 0
+.clear_page_dir:
+  ; Because page directory is 4kb, so use loop
+  ; to make page directory be 0 byte by byte
+  mov byte [PAGE_DIR_TABLE_POS + esi], 0
+  inc esi
+  loop .clear_page_dir
+.create_pde:
+  ; Here we make a 4G virtual address space.
+  ; The OS occupies 1G of high address, so we
+  ; need to make the address which is bleow
+  ; `0xc03fffff` and `0x003fffff` to points to
+  ; the same page table entry
+  mov eax, PAGE_DIR_TABLE_POS
+  add eax, 0x1000
+  mov ebx, eax
+
+  or eax, PG_US_U | PG_RW_W | PG_P
+
+  ; We let page directory table
+  ; item `0` and `0xc00` to points to the same page
+  ; table entry.
+  mov [PAGE_DIR_TABLE_POS + 0x0], eax
+  mov [PAGE_DIR_TABLE_POS+ 0xc00], eax
+
+  ; Make the last page directory table entry points to
+  ; page directory table itself
+  sub eax, 0x1000
+  mov [PAGE_DIR_TABLE_POS + 4092], eax
+
+  ; Because the actualy physical memory for kernel is 1M
+  ; and the page size is 4k, so we need 256 pages for kernel.
+  mov ecx, 256 ; 1M / 4k = 256
+  mov esi, 0
+  mov edx, PG_US_U | PG_RW_W | PG_P
+.create_pte:
+  mov [ebx + esi * 4], edx
+  ; Here, we use `edx` to store the page table entry phsyical
+  ; address, thus make virtual address equal phsyical address
+  add edx, 4096
+  inc esi
+  loop .create_pte
+
+  mov eax, PAGE_DIR_TABLE_POS
+  add eax, 0x2000
+  or eax, PG_US_U | PG_RW_W | PG_P
+  mov ebx, PAGE_DIR_TABLE_POS
+  mov ecx, 254
+  mov esi, 769
+
+.create_kernel_pde:
+  mov [ebx+esi*4], eax
+  inc esi
+  add eax, 0x1000
+  loop .create_kernel_pde
+
+  ret
