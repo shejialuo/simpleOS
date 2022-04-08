@@ -22,6 +22,11 @@ add_executable(mbr mbr.nasm)
 
 set_target_properties(mbr loader
   PROPERTIES
+  NASM_OBJ_FORMAT bin
+)
+
+set_target_properties(mbr loader
+  PROPERTIES
   SUFFIX .bin
 )
 
