@@ -13,8 +13,11 @@ add_compile_options(
 include_directories(
   ${PROJECT_SOURCE_DIR}/lib
   ${PROJECT_SOURCE_DIR}/lib/kernel
+  ${PROJECT_SOURCE_DIR}/kernel/include/
+  ${PROJECT_SOURCE_DIR}/device/include/
 )
 
 add_subdirectory(./boot)
 add_subdirectory(./lib)
+add_subdirectory(./device)
 add_subdirectory(./kernel)

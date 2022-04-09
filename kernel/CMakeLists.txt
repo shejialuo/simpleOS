@@ -1,16 +1,28 @@
-add_executable(kernel main.cpp)
+set(COMPILE_FILE
+  main.cpp init.cpp interrupt.cpp
+)
+
+set(LIBRARY_FILE
+  kernel.nasm
+)
+
+add_executable(kernel ${COMPILE_FILE})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
-target_link_libraries(kernel print)
+add_library(kernelSelf STATIC ${LIBRARY_FILE})
+
+target_link_libraries(kernel device kernelSelf  print)
 
 set_target_properties(kernel
   PROPERTIES
   SUFFIX .bin
 )
 
+set_target_properties(kernelSelf PROPERTIES NASM_OBJ_FORMAT elf)
+
 target_compile_options(kernel
   PRIVATE
-  -m32 -no-pie -fno-stack-protector -fno-builtin
+  -m32 -no-pie -fno-stack-protector -fno-builtin -Wno-write-strings
 )
 
 target_link_options(kernel
