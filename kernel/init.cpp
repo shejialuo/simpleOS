@@ -2,6 +2,7 @@
 #include "print.hpp"
 #include "interrupt.hpp"
 #include "timer.hpp"
+#include "memory.hpp"
 
 /*
   * A function to initialize all the components
@@ -13,4 +14,5 @@ void initializationAll() {
   put_str("Initialization all\n");
   interruptionInitialization();
   timerInitialization();
+  memoryInitialization();
 }

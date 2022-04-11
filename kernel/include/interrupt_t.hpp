@@ -1,5 +1,5 @@
-#ifndef _KERNEL_IGD_HPP
-#define _KERNEL_IGD_HPP
+#ifndef _KERNEL_INTERRUPT_T_HPP
+#define _KERNEL_INTERRUPT_T_HPP
 
 /*
   * This file is used to define the type and
@@ -15,11 +15,13 @@
   ! Here, use `constexpr` to do compile-time calculation
 */
 
-constexpr int16_t INTERRUPTION_NUM = 0x21; // The support number of interruption
-constexpr int16_t PIC_M_CTRL = 0x20;       // 8259A's main control port
-constexpr int16_t PIC_M_DATA = 0x21;       // 8259A's main data port
-constexpr int16_t PIC_S_CTRL = 0xa0;       // 8259A's slave control port
-constexpr int16_t PIC_S_DATA = 0xa1	;      // 8259A's slave data port
+constexpr uint16_t INTERRUPTION_NUM = 0x21; // The support number of interruption
+constexpr uint16_t PIC_M_CTRL = 0x20;       // 8259A's main control port
+constexpr uint16_t PIC_M_DATA = 0x21;       // 8259A's main data port
+constexpr uint16_t PIC_S_CTRL = 0xa0;       // 8259A's slave control port
+constexpr uint16_t PIC_S_DATA = 0xa1	;      // 8259A's slave data port
+
+constexpr uint16_t EFLAGS_IF = 0x00000200;  // Eflags if
 
 /*
   * To define the interuppt gate descriptor
@@ -55,4 +57,4 @@ extern interruptHandler interruptionFunctionEntryTable[INTERRUPTION_NUM];
 */
 char* interruptionName[INTERRUPTION_NUM];
 
-#endif // _KERNEL_IGD_HPP
+#endif // _KERNEL_INTERRUPT_T_HPP

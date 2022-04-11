@@ -8,6 +8,17 @@
 static igd_t igd[INTERRUPTION_NUM];
 
 /*
+  * A function to wrap the assembly code
+  * to get current eflags register content
+
+  * param: void
+  * return: void
+*/
+static inline void getEFlags(uint32_t eflag) {
+  asm volatile("pushfl; popl %0" : "=g" (eflag));
+}
+
+/*
   * A function to create an interruption Gate Descrptor
 
   * param:
@@ -139,4 +150,64 @@ void interruptionInitialization() {
   asm volatile("lidt %0" ::"m" (igdSize));
 
   put_str("Interruption initialization done\n");
+}
+
+/*
+  * A function to enable interruption and return
+  * the old interruption status
+
+  * param: void
+  * return: scoped enum class `InterruptionStatus`
+*/
+InterruptionStatus interruptionEnable() {
+  InterruptionStatus oldStatus;
+  if (InterruptionStatus::ON == interruptionGetStatus()) {
+    oldStatus == InterruptionStatus::ON;
+    return oldStatus;
+  } else {
+    oldStatus = InterruptionStatus::OFF;
+    asm volatile("sti");
+    return oldStatus;
+  }
+}
+
+/*
+  * A function to disable interruption and return
+  * the old interruption status
+
+  * param: void
+  * return: scoped enum class `InterruptionStatus`
+*/
+InterruptionStatus interruptionDisable() {
+  InterruptionStatus oldStatus;
+  if (InterruptionStatus::ON == interruptionGetStatus()) {
+    oldStatus == InterruptionStatus::ON;
+    asm volatile("cli" ::: "memory");
+    return oldStatus;
+  } else {
+    oldStatus = InterruptionStatus::OFF;
+    return oldStatus;
+  }
+}
+
+/*
+  * A function to set the interruption status
+
+  * param: scoped enum class `InterruptionStatus`
+  * return: scoped enum class `InterruptionStatus`
+*/
+InterruptionStatus interruptionSetStatus(InterruptionStatus status) {
+  return (status == InterruptionStatus::ON) ? interruptionEnable() : interruptionDisable();
+}
+
+/*
+  * A function to get current interruption status
+
+  * param: void
+  * return: scoped enum class `InterruptionStatus`
+*/
+InterruptionStatus interruptionGetStatus() {
+  uint32_t eflags = 0;
+  getEFlags(eflags);
+  return (EFLAGS_IF & eflags) ? InterruptionStatus::ON : InterruptionStatus::OFF;
 }

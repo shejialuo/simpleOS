@@ -1,24 +1,29 @@
 set(COMPILE_FILE
-  main.cpp init.cpp interrupt.cpp
+  main.cpp init.cpp interrupt.cpp debug.cpp memory.cpp
 )
 
-set(LIBRARY_FILE
+set(LIBRARY_ASSEMBLY_FILE
   kernel.nasm
+)
+
+set(LIBRARY
+  device KernelSelfASSEMBLY LibKernelCPP
+  LibKernelASSEMBLY Lib
 )
 
 add_executable(kernel ${COMPILE_FILE})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
-add_library(kernelSelf STATIC ${LIBRARY_FILE})
+add_library(KernelSelfASSEMBLY STATIC ${LIBRARY_ASSEMBLY_FILE})
 
-target_link_libraries(kernel device kernelSelf  print)
+target_link_libraries(kernel ${LIBRARY})
 
 set_target_properties(kernel
   PROPERTIES
   SUFFIX .bin
 )
 
-set_target_properties(kernelSelf PROPERTIES NASM_OBJ_FORMAT elf)
+set_target_properties(KernelSelfASSEMBLY PROPERTIES NASM_OBJ_FORMAT elf)
 
 target_compile_options(kernel
   PRIVATE
