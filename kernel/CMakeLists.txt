@@ -7,7 +7,7 @@ set(LIBRARY_ASSEMBLY_FILE
 )
 
 set(LIBRARY
-  device KernelSelfASSEMBLY LibKernelCPP
+  device thread KernelSelfASSEMBLY LibKernelCPP
   LibKernelASSEMBLY Lib
 )
 

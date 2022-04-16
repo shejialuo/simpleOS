@@ -7,16 +7,7 @@
 
 static igd_t igd[INTERRUPTION_NUM];
 
-/*
-  * A function to wrap the assembly code
-  * to get current eflags register content
-
-  * param: void
-  * return: void
-*/
-static inline void getEFlags(uint32_t eflag) {
-  asm volatile("pushfl; popl %0" : "=g" (eflag));
-}
+#define GET_EFLAGS(EFLAG_VAR) asm volatile("pushfl; popl %0" : "=g" (EFLAG_VAR))
 
 /*
   * A function to create an interruption Gate Descrptor
@@ -62,9 +53,37 @@ static void generalInterruptionHandler(uint8_t vectorNumber) {
   if(vectorNumber == 0x27 || vectorNumber == 0x2f) {
     return;
   }
-  put_str("int vector : 0x");
-  put_int(vectorNumber);
-  put_char('\n');
+  set_cursor(0);
+  int cursorPosition = 0;
+  while(cursorPosition < 320) {
+    put_char(' ');
+    cursorPosition++;
+  }
+
+  set_cursor(0);
+  put_str("!!!!!!!      excetion message begin  !!!!!!!!\n");
+  set_cursor(88);
+  put_str(interruptionName[vectorNumber]);
+  if(vectorNumber == 14) {
+    int pageFaultVirtualAddress = 0;
+    asm ("movl %%cr2, %0" : "=r" (pageFaultVirtualAddress));
+    put_str("\npage fault addr is ");
+    put_int(pageFaultVirtualAddress);
+  }
+  put_str("\n!!!!!!!      excetion message end    !!!!!!!!\n");
+  while(1) ;
+}
+
+/*
+  * A function to register the interruption function
+
+  * param:
+    1. interruption vector number
+    2. inteeruption function
+  * return: void
+*/
+void registerHandler(uint8_t vectorNumber, interruptHandler function) {
+  interruptionFunctionTable[vectorNumber] = function;
 }
 
 /*
@@ -208,6 +227,6 @@ InterruptionStatus interruptionSetStatus(InterruptionStatus status) {
 */
 InterruptionStatus interruptionGetStatus() {
   uint32_t eflags = 0;
-  getEFlags(eflags);
+  GET_EFLAGS(eflags);
   return (EFLAGS_IF & eflags) ? InterruptionStatus::ON : InterruptionStatus::OFF;
 }

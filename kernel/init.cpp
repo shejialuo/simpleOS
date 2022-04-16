@@ -2,6 +2,7 @@
 #include "print.hpp"
 #include "interrupt.hpp"
 #include "timer.hpp"
+#include "thread.hpp"
 #include "memory.hpp"
 
 /*
@@ -13,6 +14,7 @@
 void initializationAll() {
   put_str("Initialization all\n");
   interruptionInitialization();
-  timerInitialization();
   memoryInitialization();
+  threadInitialization();
+  timerInitialization();
 }

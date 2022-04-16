@@ -1,5 +1,5 @@
 set(LIBRARY_CPP_FILE
-  bitmap.cpp
+  bitmap.cpp list.cpp
 )
 
 set(LIBRARY_ASSEMBLY_FILE
