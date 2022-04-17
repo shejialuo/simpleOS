@@ -6,3 +6,6 @@ You can see the book written by Chinese([操作系统真象还原](https://book.
 The original book's build system is `make`, which is not easy to use.
 So I use `cmake` as build system. Maybe, you can use the code to make
 your life easy.
+
+For some reason, I think after chapter 9 there is no need to study. So this repository is consistent
+with the chapter 9
